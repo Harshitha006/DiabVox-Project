@@ -1,0 +1,7 @@
+{
+    "name": "diabvox-frontend",
+    "version": "1.0.0",
+    "description": "Frontend for DiabVox AI Health Monitoring System",
+    "main": "src/index.js",
+    "dependencies": {}
+  }
