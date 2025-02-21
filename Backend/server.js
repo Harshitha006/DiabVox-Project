@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// MongoDB Connection
+// ✅ MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -17,45 +17,28 @@ mongoose.connect(process.env.MONGO_URI, {
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.error('❌ MongoDB Connection Error:', err));
 
-// ✅ Import Models (ADD THIS)
-const HealthLog = require("./models/HealthLog");
-const DietPlan = require("./models/DietPlan");
-const SleepLog = require("./models/SleepLog");
-const WaterLog = require("./models/WaterLog");
-
-// Importing Routes
+// ✅ Import Routes
 const userRoutes = require('./routes/userRoutes');
 const healthRoutes = require('./routes/healthRoutes');
 const dietRoutes = require('./routes/dietRoutes');
 const sleepRoutes = require('./routes/sleepRoutes');
 const waterRoutes = require('./routes/waterRoutes');
+const aiRoutes = require('./routes/aiRoutes');          // ML API Calls
+const diabetesRoutes = require('./routes/diabetesRoutes'); // Fetch stored dataset
 
-// Using Routes
+// ✅ Use Routes
 app.use('/api/users', userRoutes);
 app.use('/api/health', healthRoutes);
 app.use('/api/diet', dietRoutes);
 app.use('/api/sleep', sleepRoutes);
 app.use('/api/water', waterRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/diabetes', diabetesRoutes);  // New Route to Get Dataset
 
 app.get('/', (req, res) => {
     res.send('🚀 DiabVox API is Running!');
 });
 
-// Test Route to check all routes
-app.get('/api/test', (req, res) => {
-    res.json({
-        message: '🚀 API is working!',
-        endpoints: [
-            { route: '/api/users', description: 'User authentication and data' },
-            { route: '/api/health', description: 'Health logging (glucose, insulin)' },
-            { route: '/api/diet', description: 'Diet plan recommendations' },
-            { route: '/api/sleep', description: 'Sleep tracking' },
-            { route: '/api/water', description: 'Water intake tracking' },
-        ]
-    });
-});
-
-// Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
