@@ -1,39 +1,3 @@
-// const express = require('express');
-// const mongoose = require('mongoose');
-// const cors = require('cors');
-// require('dotenv').config();
-
-// const app = express();
-
-// // Middleware
-// app.use(express.json());
-// app.use(cors());
-
-// // MongoDB Connection
-// mongoose.connect(process.env.MONGO_URI, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true,
-// })
-// .then(() => console.log('✅ MongoDB Connected'))
-// .catch(err => console.error('❌ MongoDB Connection Error:', err));
-
-// // Routes
-// app.use('/api/users', require('./routes/userRoutes'));
-// app.use('/api/health', require('./routes/healthRoutes'));
-// app.use('/api/diet', require('./routes/dietRoutes'));
-// app.use('/api/ai', require('./routes/aiRoutes'));
-// app.use('/api/voice', require('./routes/voiceRoutes'));
-
-// // Test Route
-// app.get('/', (req, res) => {
-//     res.send('🚀 DiabVox Backend API is Running!');
-// });
-
-// // Start Server
-// const PORT = process.env.PORT || 5000;
-// app.listen(PORT, () => {
-//     console.log(`✅ Server running on port ${PORT}`);
-// });
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
@@ -52,6 +16,12 @@ mongoose.connect(process.env.MONGO_URI, {
 })
 .then(() => console.log('✅ MongoDB Connected'))
 .catch(err => console.error('❌ MongoDB Connection Error:', err));
+
+// ✅ Import Models (ADD THIS)
+const HealthLog = require("./models/HealthLog");
+const DietPlan = require("./models/DietPlan");
+const SleepLog = require("./models/SleepLog");
+const WaterLog = require("./models/WaterLog");
 
 // Importing Routes
 const userRoutes = require('./routes/userRoutes');
