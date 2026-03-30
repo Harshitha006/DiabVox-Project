@@ -385,54 +385,81 @@ def glucose_status(g):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# CSS
+# THEME DETECTION & CSS
 # ═══════════════════════════════════════════════════════════════════════════════
-st.markdown("""
+# Detect light/dark mode from Streamlit config
+is_dark_mode = st.get_option("theme.base") != "light"
+
+st.markdown(f"""
 <style>
+:root {{
+    --bg-primary: {'#08090f' if is_dark_mode else '#ffffff'};
+    --bg-secondary: {'#161d2e' if is_dark_mode else '#f5f5f5'};
+    --bg-tertiary: {'#101520' if is_dark_mode else '#fafafa'};
+    --text-primary: {'#e8eeff' if is_dark_mode else '#1a1a1a'};
+    --text-secondary: {'#5a6882' if is_dark_mode else '#666666'};
+    --border-color: {'rgba(255,255,255,0.07)' if is_dark_mode else 'rgba(0,0,0,0.1)'};
+}}
+
 /* General */
-body, .stApp { background: #08090f; color: #e8eeff; }
-[data-testid="stSidebar"] { background: #101520; border-right: 1px solid rgba(255,255,255,0.07); }
-.stButton > button {
+body, .stApp {{ 
+    background: var(--bg-primary); 
+    color: var(--text-primary); 
+}}
+[data-testid="stSidebar"] {{ 
+    background: var(--bg-tertiary); 
+    border-right: 1px solid var(--border-color); 
+}}
+.stButton > button {{
     background: linear-gradient(135deg,#4f8ef7,#9b6dff);
     color: #fff; border: none; border-radius: 9px;
     font-weight: 700; padding: 9px 20px;
     transition: opacity 0.2s;
-}
-.stButton > button:hover { opacity: 0.88; }
-.stButton > button[kind="secondary"] {
-    background: #161d2e; color: #5a6882;
-    border: 1px solid rgba(255,255,255,0.07);
-}
-.metric-card {
-    background: #161d2e; border: 1px solid rgba(255,255,255,0.07);
+}}
+.stButton > button:hover {{ opacity: 0.88; }}
+.stButton > button[kind="secondary"] {{
+    background: var(--bg-secondary); 
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+}}
+.metric-card {{
+    background: var(--bg-secondary); 
+    border: 1px solid var(--border-color);
     border-radius: 13px; padding: 16px 18px; margin-bottom: 10px;
-}
-.score-badge {
+}}
+.score-badge {{
     display: inline-block; padding: 4px 14px; border-radius: 20px;
     font-weight: 700; font-size: 13px;
-}
-.section-header {
+}}
+.section-header {{
     font-size: 22px; font-weight: 700; margin-bottom: 4px;
     background: linear-gradient(90deg,#4f8ef7,#9b6dff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-}
-.sub-text { color: #5a6882; font-size: 13px; margin-bottom: 16px; }
-.card-box {
-    background: #101520; border: 1px solid rgba(255,255,255,0.07);
+}}
+.sub-text {{ color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; }}
+.card-box {{
+    background: var(--bg-tertiary); 
+    border: 1px solid var(--border-color);
     border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
-}
-.log-row {
-    background: #161d2e; border: 1px solid rgba(255,255,255,0.07);
+}}
+.log-row {{
+    background: var(--bg-secondary); 
+    border: 1px solid var(--border-color);
     border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
-}
-.risk-bar-wrap {
-    background: #1d2640; border-radius: 4px; height: 8px; margin-top: 6px;
-}
-.risk-bar-fill {
+}}
+.risk-bar-wrap {{
+    background: {'#1d2640' if is_dark_mode else '#e8e8e8'}; 
+    border-radius: 4px; height: 8px; margin-top: 6px;
+}}
+.risk-bar-fill {{
     border-radius: 4px; height: 8px;
-}
-.stProgress > div > div > div { background: linear-gradient(90deg,#4f8ef7,#9b6dff) !important; }
-div[data-testid="stExpander"] { background: #101520; border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; }
+}}
+.stProgress > div > div > div {{ background: linear-gradient(90deg,#4f8ef7,#9b6dff) !important; }}
+div[data-testid="stExpander"] {{ 
+    background: var(--bg-tertiary); 
+    border: 1px solid var(--border-color); 
+    border-radius: 10px; 
+}}
 </style>
 """, unsafe_allow_html=True)
 
@@ -918,11 +945,15 @@ def tab_voice():
         ))
         fig.add_hline(y=60, line_dash="dash", line_color="#ef4444", annotation_text="High Risk")
         fig.add_hline(y=35, line_dash="dash", line_color="#f59e0b", annotation_text="Moderate Risk")
+        plot_bg = "#161d2e" if is_dark_mode else "#f9f9f9"
+        paper_bg = "#101520" if is_dark_mode else "#ffffff"
+        grid_color = "#1d2640" if is_dark_mode else "#e0e0e0"
+        font_color = "#e8eeff" if is_dark_mode else "#1a1a1a"
         fig.update_layout(
-            paper_bgcolor="#101520", plot_bgcolor="#161d2e",
-            font_color="#e8eeff", height=250,
-            xaxis=dict(showticklabels=False, gridcolor="#1d2640"),
-            yaxis=dict(range=[0,100], title="Risk Score (%)", gridcolor="#1d2640"),
+            paper_bgcolor=paper_bg, plot_bgcolor=plot_bg,
+            font_color=font_color, height=250,
+            xaxis=dict(showticklabels=False, gridcolor=grid_color),
+            yaxis=dict(range=[0,100], title="Risk Score (%)", gridcolor=grid_color),
             margin=dict(l=0,r=0,t=10,b=10),
         )
         st.plotly_chart(fig, use_container_width=True)
@@ -1047,10 +1078,10 @@ def tab_glucose():
             text=times, hovertemplate="%{text}<br>%{y:.0f} mg/dL<extra></extra>",
         ))
         fig.update_layout(
-            paper_bgcolor="#101520", plot_bgcolor="#161d2e", font_color="#e8eeff",
+            paper_bgcolor=paper_bg, plot_bgcolor=plot_bg, font_color=font_color,
             height=220, margin=dict(l=0,r=0,t=10,b=10),
-            xaxis=dict(showticklabels=False, gridcolor="#1d2640"),
-            yaxis=dict(title="mg/dL", gridcolor="#1d2640"),
+            xaxis=dict(showticklabels=False, gridcolor=grid_color),
+            yaxis=dict(title="mg/dL", gridcolor=grid_color),
         )
         st.plotly_chart(fig, use_container_width=True)
 
