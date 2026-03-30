@@ -387,45 +387,80 @@ def glucose_status(g):
 # ═══════════════════════════════════════════════════════════════════════════════
 # THEME DETECTION & CSS
 # ═══════════════════════════════════════════════════════════════════════════════
-# Detect light/dark mode from Streamlit config
-is_dark_mode = st.get_option("theme.base") != "light"
+# Get theme from Streamlit config - use config file if available
+try:
+    theme_base = st.get_option("theme.base")
+except:
+    theme_base = "dark"  # Default to dark
+
+is_dark_mode = theme_base != "light"
+
+# Apply CSS with proper theme colors
+if is_dark_mode:
+    # Dark mode colors
+    bg_primary = "#08090f"
+    bg_secondary = "#161d2e"
+    bg_tertiary = "#101520"
+    text_primary = "#e8eeff"
+    text_secondary = "#5a6882"
+    border_color = "rgba(255,255,255,0.07)"
+    grid_color = "#1d2640"
+else:
+    # Light mode colors
+    bg_primary = "#ffffff"
+    bg_secondary = "#f5f5f5"
+    bg_tertiary = "#fafafa"
+    text_primary = "#1a1a1a"
+    text_secondary = "#666666"
+    border_color = "rgba(0,0,0,0.1)"
+    grid_color = "#e0e0e0"
 
 st.markdown(f"""
 <style>
-:root {{
-    --bg-primary: {'#08090f' if is_dark_mode else '#ffffff'};
-    --bg-secondary: {'#161d2e' if is_dark_mode else '#f5f5f5'};
-    --bg-tertiary: {'#101520' if is_dark_mode else '#fafafa'};
-    --text-primary: {'#e8eeff' if is_dark_mode else '#1a1a1a'};
-    --text-secondary: {'#5a6882' if is_dark_mode else '#666666'};
-    --border-color: {'rgba(255,255,255,0.07)' if is_dark_mode else 'rgba(0,0,0,0.1)'};
-}}
-
 /* General */
 body, .stApp {{ 
-    background: var(--bg-primary); 
-    color: var(--text-primary); 
+    background-color: {bg_primary} !important; 
+    color: {text_primary} !important; 
 }}
+
+.stMainBlockContainer {{
+    background-color: {bg_primary} !important;
+}}
+
 [data-testid="stSidebar"] {{ 
-    background: var(--bg-tertiary); 
-    border-right: 1px solid var(--border-color); 
+    background-color: {bg_tertiary} !important; 
+    border-right: 1px solid {border_color}; 
 }}
+
+[data-testid="stSidebar"]>div:first-child {{
+    background-color: {bg_tertiary} !important;
+}}
+
+/* Text colors */
+.stMarkdown, .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3 {{
+    color: {text_primary} !important;
+}}
+
+/* Buttons */
 .stButton > button {{
-    background: linear-gradient(135deg,#4f8ef7,#9b6dff);
-    color: #fff; border: none; border-radius: 9px;
+    background: linear-gradient(135deg,#4f8ef7,#9b6dff) !important;
+    color: #fff !important; border: none; border-radius: 9px;
     font-weight: 700; padding: 9px 20px;
     transition: opacity 0.2s;
 }}
 .stButton > button:hover {{ opacity: 0.88; }}
 .stButton > button[kind="secondary"] {{
-    background: var(--bg-secondary); 
-    color: var(--text-secondary);
-    border: 1px solid var(--border-color);
+    background: {bg_secondary} !important; 
+    color: {text_secondary} !important;
+    border: 1px solid {border_color} !important;
 }}
+
+/* Cards and containers */
 .metric-card {{
-    background: var(--bg-secondary); 
-    border: 1px solid var(--border-color);
+    background: {bg_secondary} !important; 
+    border: 1px solid {border_color} !important;
     border-radius: 13px; padding: 16px 18px; margin-bottom: 10px;
+    color: {text_primary} !important;
 }}
 .score-badge {{
     display: inline-block; padding: 4px 14px; border-radius: 20px;
@@ -436,19 +471,21 @@ body, .stApp {{
     background: linear-gradient(90deg,#4f8ef7,#9b6dff);
     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }}
-.sub-text {{ color: var(--text-secondary); font-size: 13px; margin-bottom: 16px; }}
+.sub-text {{ color: {text_secondary} !important; font-size: 13px; margin-bottom: 16px; }}
 .card-box {{
-    background: var(--bg-tertiary); 
-    border: 1px solid var(--border-color);
+    background: {bg_tertiary} !important; 
+    border: 1px solid {border_color} !important;
     border-radius: 14px; padding: 18px 20px; margin-bottom: 14px;
+    color: {text_primary} !important;
 }}
 .log-row {{
-    background: var(--bg-secondary); 
-    border: 1px solid var(--border-color);
+    background: {bg_secondary} !important; 
+    border: 1px solid {border_color} !important;
     border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+    color: {text_primary} !important;
 }}
 .risk-bar-wrap {{
-    background: {'#1d2640' if is_dark_mode else '#e8e8e8'}; 
+    background: {grid_color} !important; 
     border-radius: 4px; height: 8px; margin-top: 6px;
 }}
 .risk-bar-fill {{
@@ -456,9 +493,27 @@ body, .stApp {{
 }}
 .stProgress > div > div > div {{ background: linear-gradient(90deg,#4f8ef7,#9b6dff) !important; }}
 div[data-testid="stExpander"] {{ 
-    background: var(--bg-tertiary); 
-    border: 1px solid var(--border-color); 
+    background: {bg_tertiary} !important; 
+    border: 1px solid {border_color} !important; 
     border-radius: 10px; 
+}}
+div[data-testid="stExpander"] > div:first-child {{
+    color: {text_primary} !important;
+}}
+
+/* Input fields */
+.stTextInput input, .stNumberInput input, .stSelectbox select {{
+    background-color: {bg_secondary} !important;
+    color: {text_primary} !important;
+    border: 1px solid {border_color} !important;
+}}
+
+/* Tab styling */
+button[data-baseweb="tab"]{{
+    color: {text_secondary} !important;
+}}
+button[data-baseweb="tab"][aria-selected="true"]{{
+    color: #4f8ef7 !important;
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -945,13 +1000,9 @@ def tab_voice():
         ))
         fig.add_hline(y=60, line_dash="dash", line_color="#ef4444", annotation_text="High Risk")
         fig.add_hline(y=35, line_dash="dash", line_color="#f59e0b", annotation_text="Moderate Risk")
-        plot_bg = "#161d2e" if is_dark_mode else "#f9f9f9"
-        paper_bg = "#101520" if is_dark_mode else "#ffffff"
-        grid_color = "#1d2640" if is_dark_mode else "#e0e0e0"
-        font_color = "#e8eeff" if is_dark_mode else "#1a1a1a"
         fig.update_layout(
-            paper_bgcolor=paper_bg, plot_bgcolor=plot_bg,
-            font_color=font_color, height=250,
+            paper_bgcolor=bg_primary, plot_bgcolor=bg_secondary,
+            font_color=text_primary, height=250,
             xaxis=dict(showticklabels=False, gridcolor=grid_color),
             yaxis=dict(range=[0,100], title="Risk Score (%)", gridcolor=grid_color),
             margin=dict(l=0,r=0,t=10,b=10),
@@ -1078,7 +1129,7 @@ def tab_glucose():
             text=times, hovertemplate="%{text}<br>%{y:.0f} mg/dL<extra></extra>",
         ))
         fig.update_layout(
-            paper_bgcolor=paper_bg, plot_bgcolor=plot_bg, font_color=font_color,
+            paper_bgcolor=bg_primary, plot_bgcolor=bg_secondary, font_color=text_primary,
             height=220, margin=dict(l=0,r=0,t=10,b=10),
             xaxis=dict(showticklabels=False, gridcolor=grid_color),
             yaxis=dict(title="mg/dL", gridcolor=grid_color),
